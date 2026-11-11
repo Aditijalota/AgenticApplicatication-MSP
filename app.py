@@ -19,6 +19,32 @@ def secret(name, default=''):
         return os.getenv(name, default)
 
 
+def safe_error_message(exc):
+    # Never expose exception text, response bodies, headers, or credentials.
+    from openai import (AuthenticationError, PermissionDeniedError, RateLimitError,
+                        NotFoundError, BadRequestError, APIConnectionError, APITimeoutError)
+    if isinstance(exc, AuthenticationError):
+        return 'API authentication failed (401). Replace OPENAI_API_KEY in Streamlit Secrets with an active OpenAI API key.'
+    if isinstance(exc, PermissionDeniedError):
+        return 'API permission denied (403). Check that the key and project permit the selected chat model and embeddings.'
+    if isinstance(exc, RateLimitError):
+        if getattr(exc, 'code', None) in ('insufficient_quota', 'credit_balance_exhausted'):
+            return 'API credits or quota exhausted. Check billing and available credits for the OpenAI organization that owns this key.'
+        return 'API rate or quota limit reached (429). Check OpenAI billing and project limits; if funded, wait a minute and retry.'
+    if isinstance(exc, NotFoundError):
+        return 'API model or resource unavailable (404). Check project access to OPENAI_MODEL and text-embedding-3-small.'
+    if isinstance(exc, BadRequestError):
+        return 'API rejected the request (400). Model configuration or the structured response schema needs investigation.'
+    if isinstance(exc, APITimeoutError):
+        return 'The AI request timed out. Retry once; persistent failures require checking provider availability.'
+    if isinstance(exc, APIConnectionError):
+        return 'Could not connect to the AI provider. Retry once and check network/provider availability.'
+    # Class names identify software failures without exposing user inputs.
+    name = type(exc).__name__
+    safe_name = name if name.isidentifier() and len(name) < 80 else 'InternalError'
+    return 'Application processing failed (' + safe_name + '). Report this error category for debugging.'
+
+
 st.title('AI Integration Security Advisor')
 st.caption('MSP decision support · ChatGPT · Claude · Gemini · Week 2 RAG prototype')
 
@@ -103,9 +129,10 @@ with tab:
                         st.session_state.graph = create_graph(api_key, model)
                         st.session_state.graph_signature = signature
                     st.session_state.result = run(st.session_state.graph, question, scenario, mode)
-            except Exception:
+            except Exception as exc:
                 st.session_state.pop('result', None)
-                st.error('The request could not complete. Check API access, quota, model availability and connectivity. No assessment has been approved. Raw provider errors are hidden to protect configuration details.')
+                st.error(safe_error_message(exc))
+                st.caption('No assessment was completed. Credentials and raw provider responses remain hidden.')
     result = st.session_state.get('result')
     if result:
         st.subheader({'answer': 'Evidence-based assessment', 'clarify': 'More information needed', 'abstain': 'Unable to conclude'}[result['route']])
