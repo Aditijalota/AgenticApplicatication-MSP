@@ -1,0 +1,110 @@
+[
+  {
+    "id": "OAI-LIVE",
+    "title": "SharePoint app: live access and prerequisites",
+    "url": "https://help.openai.com/en/articles/12143177-sharepoint-app-and-setup-in-chatgpt",
+    "section": "Overview; Connect SharePoint; Review permissions for live SharePoint access",
+    "scope": "live",
+    "reviewed": "2026-11-09",
+    "kind": "Paraphrased official documentation note",
+    "text": "The SharePoint app can search content available to the connected Microsoft work or school account, including supported work/school OneDrive content. Personal OneDrive is outside its supported account types. Availability varies with plan, region, workspace configuration and Entra policies.\n\nLive SharePoint access requires Microsoft authorization as well as workspace configuration. The documented read scopes include User.Read, offline_access, Files.Read.All and Sites.Read.All. Write-related permissions apply when corresponding write actions are enabled. Exact consent requests must be reviewed for the selected configuration.\n\nMicrosoft Entra consent and ChatGPT action enablement are separate steps, potentially performed by different administrators. Consent does not automatically connect individual accounts or enable actions. Existing Microsoft access restrictions still apply. Sites.Selected is not supported for live SharePoint search; supported ChatGPT site-collection restrictions are a separate mechanism.",
+    "vendor": "ChatGPT",
+    "platform": "Microsoft 365"
+  },
+  {
+    "id": "MS-PERM",
+    "title": "Microsoft delegated and application permissions",
+    "url": "https://learn.microsoft.com/en-us/entra/identity-platform/permissions-consent-overview",
+    "section": "Access scenarios; Types of permissions; Administrator consent",
+    "scope": "all",
+    "reviewed": "2026-11-09",
+    "kind": "Paraphrased official documentation note",
+    "text": "Delegated access acts for an authenticated user. Both the application's granted scopes and the user's own authorization constrain access. Delegated Files.Read.All permits reading files accessible to that user.\n\nApplication permissions operate as the application without a signed-in user. The same permission name can have different implications: application Files.Read.All allows reading tenant files through Microsoft Graph. Application permissions and some privileged delegated scopes need administrator consent.\n\nConsent authorizes specified permissions. An administrator can approve delegated permissions too, so the administrator's participation alone does not establish that the app has application-only access or an administrator role. Inspect the permission type and requested operations.",
+    "vendor": "shared",
+    "platform": "Microsoft 365"
+  },
+  {
+    "id": "MS-REVIEW",
+    "title": "Evaluating application consent requests",
+    "url": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/manage-consent-requests",
+    "section": "Auditing and monitoring; Evaluate a request for tenant-wide admin consent",
+    "scope": "all",
+    "reviewed": "2026-11-09",
+    "kind": "Paraphrased official documentation note",
+    "text": "Microsoft recommends restricting user consent to selected permissions and verified publishers, with other requests reviewed centrally. An administrator approval workflow can support this process. Review existing apps and granted permissions; additional monitoring capabilities depend on licensing.\n\nBefore tenant-wide consent, verify the publisher and application identity, understand every requested permission, and match the request to the expected business functionality. Familiarity or widespread use is not sufficient justification. Do not grant permissions that are unexplained or appear excessive; obtain clarification from the publisher.\n\nWhere appropriate, consider user assignment restrictions for approved applications. Review delegated versus application permissions explicitly rather than assuming all consent requests have the same impact.",
+    "vendor": "shared",
+    "platform": "Microsoft 365"
+  },
+  {
+    "id": "OAI-CONTROL",
+    "title": "SharePoint site-collection and label controls",
+    "url": "https://help.openai.com/en/articles/20001502-managing-sharepoint-site-access-and-sensitivity-label-exclusions",
+    "section": "Overview; Availability; Before you begin",
+    "scope": "live",
+    "reviewed": "2026-11-09",
+    "kind": "Paraphrased official documentation note",
+    "text": "When enabled for the workspace, SharePoint controls support allowed or blocked site collections and exclusions for supported files carrying selected sensitivity labels. A site-collection rule covers the collection, not exact individual folders or files. OneDrive controls are separate.\n\nOnly one site list may be populated at a time. A populated allowlist restricts access to its entries; an empty allowlist is not a deny-all rule. If both lists are empty, the site restrictions are removed while other access controls remain.\n\nThese OpenAI-side filters do not replace the required Microsoft delegated scopes and do not grant users additional source access. Workspace enablement and label identifiers must be verified before recommending these controls as available. Test the resulting restrictions after configuration.",
+    "vendor": "ChatGPT",
+    "platform": "Microsoft 365"
+  },
+  {
+    "id": "OAI-PRIVACY",
+    "title": "Business data privacy commitments",
+    "url": "https://openai.com/enterprise-privacy/",
+    "section": "Ownership; Model training; Apps; Retention",
+    "scope": "all",
+    "reviewed": "2026-11-09",
+    "kind": "Paraphrased official documentation note",
+    "text": "OpenAI states that business inputs and outputs are not used for model training by default. Explicit opt-in sharing is an exception. This applies to the covered business products and API, not as a universal statement about every consumer account.\n\nWorkspace administrators control connected sources and app availability. Existing source permissions apply to connected app access. OpenAI describes encryption in transit and at rest. Enterprise, Edu and Healthcare retention controls are identified separately in the policy; do not infer that every plan has identical retention settings.\n\nNo-training commitments, encryption and vendor assurance do not establish that a particular customer's permissions or configuration have been assessed. A business subscription does not itself constitute approval of an integration.",
+    "vendor": "ChatGPT",
+    "platform": "Microsoft 365"
+  },
+  {
+    "id": "OAI-ADMIN",
+    "title": "Workspace app controls and plan distinctions",
+    "url": "https://help.openai.com/en/articles/11509118-admin-controls-security-and-compliance-for-plugins-and-apps",
+    "section": "Default behavior by plan; Role-based access control; Manage plugin and app access",
+    "scope": "all",
+    "reviewed": "2026-11-09",
+    "kind": "Paraphrased official documentation note",
+    "text": "Business administrators can manage workspace-wide app availability. Enterprise and Edu have role-based app access capabilities where available. Plugin installation, underlying app access and individual actions are separate controls. Turning off an app does not necessarily remove a plugin's independent skills.\n\nDo not infer a workspace's current settings solely from plan defaults. Review the actual configuration and available controls. For requirements involving role-specific app restrictions, Enterprise or Edu capabilities warrant verification; Business workspace-wide enablement should not be described as equivalent role-based restriction.\n\nMicrosoft permission grants, enabled ChatGPT actions and an individual's account connection are distinct prerequisites. A change to the Microsoft grant can require reviewing or refreshing the connection.",
+    "vendor": "ChatGPT",
+    "platform": "Microsoft 365"
+  },
+  {
+    "id": "OAI-SYNC",
+    "title": "Administrator-managed SharePoint sync (contrast only)",
+    "url": "https://help.openai.com/en/articles/12143177-sharepoint-synced-connectors-setup",
+    "section": "Set up administrator-managed SharePoint sync; Review additional administrator-managed permissions",
+    "scope": "sync",
+    "reviewed": "2026-11-09",
+    "kind": "Paraphrased official documentation note",
+    "text": "Administrator-managed SharePoint indexing is a different setup from live access. Eligible Enterprise or Edu workspace administrators configure the indexed sources and must verify workspace and regional availability.\n\nAdditional documented permissions can include Group.Read.All, GroupMember.Read.All, User.Read.All and Sites.FullControl.All for permission evaluation and indexing, with other scopes depending on configuration. The broad full-control permission warrants explicit administrator review. Existing source access still limits what individual members may retrieve.\n\nDo not transfer this administrator-managed sync permission list to live SharePoint search. Confirm the connection method before giving setup advice.",
+    "vendor": "ChatGPT",
+    "platform": "Microsoft 365"
+  },
+  {
+    "id": "CLAUDE-M365",
+    "title": "Claude Microsoft 365 connector security",
+    "url": "https://support.claude.com/en/articles/12684923-microsoft-365-connector-security-guide",
+    "section": "Work or school accounts; Restrict access",
+    "scope": "live",
+    "vendor": "Claude",
+    "platform": "Microsoft 365",
+    "reviewed": "2026-11-11",
+    "kind": "Paraphrased official documentation note",
+    "text": "Claude uses delegated permissions for Outlook, SharePoint, OneDrive and Teams. The connector is available across Claude plans. For work or school accounts, the guide requires one-time Microsoft Entra Global Administrator consent; this does not mean assigning the connector that administrator role.\n\nTeam and Enterprise add organization-level connector gating. An Owner enables Microsoft 365 through Organization settings > Connectors > Browse connectors. Individual authentication and Microsoft consent remain separate.\n\nEntra permission revocation can restrict capabilities: Mail.Read for email, Chat.Read for Teams reading, and ChatMessage.Send, ChannelMessage.Send and Chat.Create for messaging. Users may disable tools in a chat. Review the actual consent request before configuring access.\n\nConditional Access behavior differs for server-side requests. MFA applies at connection sign-in; device checks use the connection device record, not necessarily the current device. The guide says location/network restrictions are not supported as ordinary user-location controls. Do not weaken existing policies as a workaround; escalate compatibility for review."
+  },
+  {
+    "id": "GOOGLE-GEMINI",
+    "title": "Gemini app service access and editions",
+    "url": "https://knowledge.workspace.google.com/admin/generative-ai/gemini-app/turn-the-gemini-app-on-or-off",
+    "section": "Business and Enterprise editions; Core versus additional service",
+    "scope": "live",
+    "vendor": "Gemini",
+    "platform": "Google Workspace",
+    "reviewed": "2026-11-11",
+    "kind": "Paraphrased official documentation note",
+    "text": "Workspace administrators control who may use the Gemini app. This is a Google-managed service scenario, not evidence of a third-party Microsoft 365 connector.\n\nThe Gemini app is a core service with enterprise data protections for qualifying Workspace editions, including Business Starter, Business Standard, Business Plus, Enterprise Standard and Enterprise Plus. Feature availability differs by license; verify needed features before recommending an edition. Covered content is not human reviewed or used for generative model training outside the domain without permission.\n\nWithout a qualifying edition, Gemini may operate as an additional Google service under different terms. Chats may be human reviewed and used to improve products and machine-learning technologies. Google advises those users not to enter confidential or sensitive information.\n\nDo not assume enabling the Gemini app enables all Gemini features inside Workspace apps, all data connections or all security controls. Exact connected-app settings, administrative privileges and data-access restrictions require further evidence."
+  }
+]

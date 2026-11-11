@@ -1,0 +1,5 @@
+Start with README.md for setup and deployment.
+Current scope: ChatGPT + SharePoint; Claude + Microsoft 365; Gemini app + Google Workspace.
+No live tenant integration is needed.
+API access and a private demo password are required for live answers.
+Current evaluations: evals/cases.json (21 cases); earlier Excel workbook is historical.
