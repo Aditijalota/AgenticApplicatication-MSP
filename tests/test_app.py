@@ -34,3 +34,13 @@ def test_password_gate(monkeypatch):
     app.button[0].click().run()
     assert not app.exception
     assert len(app.text_area) == 1
+
+
+def test_baseline_is_explicit_opt_in(monkeypatch):
+    monkeypatch.setenv('LOCAL_DEMO', 'true')
+    monkeypatch.delenv('APP_PASSWORD', raising=False)
+    app = AppTest.from_file(ROOT / 'app.py').run()
+    assert not any(s.label == 'Retrieval experiment' for s in app.selectbox)
+    next(c for c in app.checkbox if c.label == 'Enable evaluation experiment').check().run()
+    next(s for s in app.selectbox if s.label == 'Retrieval experiment').set_value('baseline').run()
+    assert any('Evaluation only' in w.value for w in app.warning)

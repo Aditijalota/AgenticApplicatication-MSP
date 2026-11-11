@@ -1,7 +1,8 @@
 import json
 
 from advisor.pipeline import (Assessment, Gate, Grounding, ROOT, Scenario,
-                              build_graph, citation_errors, input_guard, load_documents, run)
+                              build_graph, citation_errors, input_guard, load_documents, run,
+                              scope_errors, evidence_matches, PIPELINE_VERSION)
 
 
 def test_corpus_provenance_and_chunk_limits():
@@ -95,3 +96,48 @@ def test_no_evidence_abstains():
     result = run(build_graph(Empty(), FakeLLM()), 'What account is supported?', Scenario())
     assert result['route'] == 'abstain'
     assert 'generate: structured assessment' not in result['trace']
+
+
+def test_wrong_vendor_citation_withheld_even_when_checker_would_pass():
+    class MixedStore:
+        def similarity_search(self, *args, **kwargs):
+            return [d for d in load_documents() if d.metadata['vendor'] == 'Claude']
+    result = run(build_graph(MixedStore(), FakeLLM(citation='CLAUDE-M365-1')),
+                 'Does consent assign an admin role?', Scenario(), 'baseline')
+    assert result['route'] == 'abstain'
+    assert result['assessment'] is None
+    assert 'another vendor' in result['message']
+
+
+def test_filtered_search_rejects_store_results_that_ignore_filter():
+    class BrokenFilterStore:
+        def similarity_search(self, *args, **kwargs):
+            return [d for d in load_documents() if d.metadata['vendor'] == 'Claude']
+    result = run(build_graph(BrokenFilterStore(), FakeLLM()), 'What access is needed?', Scenario())
+    assert result['route'] == 'abstain'
+    assert result['evidence'] == []
+    assert not any(t.startswith('generate:') for t in result['trace'])
+
+
+def test_shared_platform_source_cannot_support_ai_plan_claim():
+    docs = load_documents()
+    assessment = {'plan_guidance': [{'text': 'ChatGPT Business may lack monitoring.', 'citations': ['MS-REVIEW-1']}]}
+    assert scope_errors(assessment, docs, Scenario().model_dump())
+
+
+def test_matching_vendor_and_shared_permission_sources_allowed():
+    assessment = {'facts': [{'text': 'Consent is not role assignment.', 'citations': ['MS-PERM-2']}],
+                  'plan_guidance': [{'text': 'Verify documented plan controls.', 'citations': ['OAI-ADMIN-1']}]}
+    assert not scope_errors(assessment, load_documents(), Scenario().model_dump())
+
+
+def test_missing_metadata_fails_closed():
+    from langchain_core.documents import Document
+    assert not evidence_matches(Document(page_content='Unlabelled source'), Scenario().model_dump())
+
+
+def test_exports_identify_pipeline_and_corpus():
+    result = run(build_graph(FakeStore(), FakeLLM()), 'What account is supported?', Scenario())
+    assert result['pipeline_version'] == PIPELINE_VERSION
+    assert len(result['corpus_sha256']) == 64
+    assert result['completed_at_utc']

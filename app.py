@@ -7,7 +7,7 @@ import time
 import streamlit as st
 
 from advisor.ticket import render_ticket
-from advisor.pipeline import CORPUS, MODEL, Scenario, create_graph, input_guard, run
+from advisor.pipeline import CORPUS, MODEL, PIPELINE_VERSION, Scenario, create_graph, input_guard, run
 
 st.set_page_config(page_title='AI Integration Security Advisor', page_icon='🛡️', layout='wide')
 
@@ -47,6 +47,7 @@ def safe_error_message(exc):
 
 st.title('AI Integration Security Advisor')
 st.caption('MSP decision support · ChatGPT · Claude · Gemini · Week 2 RAG prototype')
+st.caption('Pipeline ' + PIPELINE_VERSION)
 
 # Default closed: requires a password unless the operator explicitly enables local mode.
 password = secret('APP_PASSWORD')
@@ -81,7 +82,12 @@ with st.sidebar:
     sensitivity = st.selectbox('Data sensitivity', ['Unknown', 'Public', 'Internal', 'Confidential / personal'])
     reviewed = st.selectbox('Source permissions reviewed?', ['Unknown', 'Yes', 'No'])
     authorized = st.selectbox('Administrator consent authority confirmed?', ['Unknown', 'Yes', 'No'])
-    mode = st.selectbox('Retrieval experiment', ['filtered', 'baseline'], help='Compare scope-filtered and unfiltered dense retrieval on the same test questions.')
+    experiment = st.checkbox('Enable evaluation experiment', value=False)
+    mode = st.selectbox('Retrieval experiment', ['filtered', 'baseline']) if experiment else 'filtered'
+    if mode == 'baseline':
+        st.warning('Evaluation only: baseline searches all vendors. Wrong-vendor citations will be rejected. Ticket export is disabled.')
+    else:
+        st.caption('Vendor and platform filtering enabled.')
     st.caption('Corpus reviewed: November 9–11, 2026. Product behavior may change. Verify linked originals before implementation.')
 
 tab, sources_tab, eval_tab = st.tabs(['Ask the advisor', 'Evidence library', 'Evaluation guide'])
@@ -122,13 +128,14 @@ with tab:
             st.session_state.queries = st.session_state.get('queries', 0) + 1
             st.session_state.last_query = time.time()
             # Per-session graph prevents scenario state or user results being shared across users.
-            signature = hashlib.sha256((api_key + model).encode()).hexdigest()
+            signature = hashlib.sha256((api_key + model + PIPELINE_VERSION).encode()).hexdigest()
             try:
                 with st.spinner('Retrieving evidence and checking the assessment…'):
                     if st.session_state.get('graph_signature') != signature:
                         st.session_state.graph = create_graph(api_key, model)
                         st.session_state.graph_signature = signature
                     st.session_state.result = run(st.session_state.graph, question, scenario, mode)
+                    st.session_state.result['model'] = model
             except Exception as exc:
                 st.session_state.pop('result', None)
                 st.error(safe_error_message(exc))
@@ -163,10 +170,12 @@ with tab:
             for item in a['unknowns']:
                 st.write('• ' + item)
             reviewed_risks = st.checkbox('I have reviewed these risks and unknowns. This is not authorization to provision.', key='risk_reviewed')
-            if reviewed_risks:
+            if reviewed_risks and result['configuration'] != 'baseline':
                 ticket = render_ticket(result, reviewed=True)
                 st.download_button('Download service-desk ticket draft', ticket, 'service-desk-ticket.md', 'text/markdown')
                 st.caption('This ticket uses the submitted assessment context, not subsequent changes in the sidebar.')
+            elif reviewed_risks:
+                st.info('Baseline is for evaluation only. Run a filtered assessment before creating a service-desk ticket.')
         with st.expander('Retrieved evidence and workflow'):
             st.caption(f"{result['configuration']} · {result['latency_seconds']} seconds")
             st.write(' → '.join(result['trace']))
