@@ -30,12 +30,15 @@ def main():
     for mode in modes:
         for c in cases:
             scenario = Scenario(vendor=c.get('vendor','ChatGPT'), platform=c.get('platform','Microsoft 365'), plan=c.get('plan', 'Business'), method=c.get('method', 'Live SharePoint access'),
-                                sensitivity=c.get('sensitivity', 'Internal'))
+                                sensitivity=c.get('sensitivity', 'Internal'),
+                                requested_permissions=c.get('requested_permissions', ''),
+                                permissions_reviewed=c.get('permissions_reviewed', 'Unknown'),
+                                consent_authorized=c.get('consent_authorized', 'Unknown'))
             try:
                 result = run(graph, c['question'], scenario, mode)
                 (folder / f'{mode}-{c["id"]}.json').write_text(json.dumps(result, indent=2))
                 retrieved = {d['id'] for d in result['evidence']}
-                expected = set(c['sources'])
+                expected = set(c['sources']) if c['route'] == 'answer' else set()
                 citations_valid = ''
                 if result['assessment']:
                     allowed = {d['chunk_id'] for d in result['evidence']}
