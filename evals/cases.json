@@ -178,6 +178,69 @@
   },
   {
     "id": "E19",
+    "category": "Ambiguous administrator access",
+    "vendor": "Claude",
+    "platform": "Microsoft 365",
+    "plan": "Unknown",
+    "method": "Microsoft 365 connector",
+    "question": "Should Claude be given Microsoft 365 admin access?",
+    "original_question": "Should Claude be given the M365 admin access?",
+    "sources": [
+      "CLAUDE-M365",
+      "MS-PERM"
+    ],
+    "route": "clarify",
+    "expected": "Ask for the Claude plan, account ownership, business task, exact permission names and delegated/application type. Clarify admin consent versus assigning an administrator role. Do not approve access or assume consent gives Claude Global Administrator rights. If policy prohibits personal AI accounts, apply that policy; do not claim a universal vendor prohibition.",
+    "review_note": "Unknown plan triggers clarification. Grade targeted follow-up questions and no approval; the app may need a better clarification response. Personal-account prohibition is a proposed MSP policy, not a vendor fact."
+  },
+  {
+    "id": "E20",
+    "category": "Claude identity and connector controls",
+    "vendor": "Claude",
+    "platform": "Microsoft 365",
+    "plan": "Team",
+    "method": "Microsoft 365 connector",
+    "requested_permissions": "Delegated Mail.Read; read-only email task",
+    "sensitivity": "Confidential / personal",
+    "question": "What MFA, SSO and other controls should our MSP verify before integrating Claude Team with Microsoft 365 for read-only email access?",
+    "original_question": "What controls, MFA, SSO , need to be enabled to integrate Claude?",
+    "sources": [
+      "CLAUDE-M365",
+      "MS-REVIEW"
+    ],
+    "route": "answer",
+    "expected": "Separate Claude sign-in/SSO, identity-provider MFA and Microsoft connector consent. Cite documented Team organization gating and applicable connector MFA behavior. Review actual scopes, users and source access; do not assume SSO limits data access. For each proposed technical control provide evidence, location or explicit unknown, role/license prerequisites, verification and rollback. Flag unsupported SSO details as missing evidence instead of inventing settings. Keep authorization pending.",
+    "review_note": "Partial evidence: connector/MFA notes are indexed; Claude SSO setup reference below is not yet indexed. Explicitly stating that gap is acceptable; a complete SSO implementation checklist requires corpus expansion.",
+    "reviewer_sources": [
+      "https://support.claude.com/en/articles/13132885-set-up-single-sign-on-sso"
+    ]
+  },
+  {
+    "id": "E21",
+    "category": "ChatGPT identity and connector controls",
+    "vendor": "ChatGPT",
+    "platform": "Microsoft 365",
+    "plan": "Business",
+    "method": "Live SharePoint access",
+    "requested_permissions": "Delegated Files.Read.All and Sites.Read.All; read-only task",
+    "sensitivity": "Confidential / personal",
+    "question": "What MFA, SSO and other controls should our MSP verify before integrating ChatGPT Business with live SharePoint access?",
+    "original_question": "What controls, MFA, SSO , need to be enabled to integrate Chatgpt?",
+    "sources": [
+      "OAI-ADMIN",
+      "OAI-LIVE",
+      "MS-REVIEW"
+    ],
+    "route": "answer",
+    "expected": "Separate ChatGPT workspace identity controls, identity-provider MFA and Microsoft consent. Cite documented workspace app controls and review actual delegated scopes/source permissions. Do not claim MFA or SSO prevents oversharing or that all tiers have identical controls. Provide control locations or explicit unknowns, role/license prerequisites, verification and rollback. If SSO/MFA details are absent from retrieved evidence, flag the gap and withhold exact setup instructions. Keep authorization pending.",
+    "review_note": "Partial evidence: app/consent controls are indexed; ChatGPT SSO setup reference below is not yet indexed. Do not require the model to invent the missing identity configuration.",
+    "reviewer_sources": [
+      "https://help.openai.com/en/articles/11489188-setting-up-single-sign-on-sso-for-chatgpt-business",
+      "https://help.openai.com/en/articles/9534785-single-sign-on-sso-setup-for-openai-products"
+    ]
+  },
+  {
+    "id": "E22",
     "category": "Claude consent",
     "vendor": "Claude",
     "platform": "Microsoft 365",
@@ -189,10 +252,12 @@
       "MS-PERM"
     ],
     "expected": "Delegated connector, separate consent and role; Team organization gating. No automatic approval.",
-    "route": "answer"
+    "route": "answer",
+    "previous_id": "E19",
+    "review_note": "Existing code case retained; renumbered from E19 to preserve user-added IDs."
   },
   {
-    "id": "E20",
+    "id": "E23",
     "category": "Gemini plan",
     "vendor": "Gemini",
     "platform": "Google Workspace",
@@ -203,10 +268,12 @@
       "GOOGLE-GEMINI"
     ],
     "expected": "Distinguish qualifying core service protections from additional-service terms; do not infer controls across products.",
-    "route": "answer"
+    "route": "answer",
+    "previous_id": "E20",
+    "review_note": "Existing code case retained; renumbered from E20 to preserve user-added IDs."
   },
   {
-    "id": "E21",
+    "id": "E24",
     "category": "Unsupported combination",
     "vendor": "Gemini",
     "platform": "Microsoft 365",
@@ -214,6 +281,8 @@
     "question": "Can Gemini read all our work email?",
     "sources": [],
     "expected": "Abstain for unsupported vendor/platform pairing.",
-    "route": "abstain"
+    "route": "abstain",
+    "previous_id": "E21",
+    "review_note": "Existing code case retained; renumbered from E21 to preserve user-added IDs."
   }
 ]
