@@ -1,0 +1,206 @@
+{
+  "route": "answer",
+  "message": "",
+  "assessment": {
+    "sufficient_evidence": true,
+    "facts": [
+      {
+        "text": "Administrator consent to Microsoft Entra permissions for ChatGPT does not assign ChatGPT an administrator role; consent and action enablement are separate steps and existing Microsoft access restrictions still apply.",
+        "citations": [
+          "OAI-LIVE-2",
+          "OAI-ADMIN-2",
+          "CLAUDE-M365-1"
+        ]
+      },
+      {
+        "text": "Delegated permissions Files.Read.All and Sites.Read.All allow ChatGPT to read all files and SharePoint sites accessible by the signed-in user, which can expose confidential or personal data if the user has broad access.",
+        "citations": [
+          "OAI-LIVE-2"
+        ]
+      },
+      {
+        "text": "Microsoft recommends restricting user consent to selected permissions and verified publishers, reviewing all permission requests centrally, and verifying the publisher and application identity before tenant-wide consent.",
+        "citations": [
+          "MS-REVIEW-1"
+        ]
+      },
+      {
+        "text": "Service desk controls should include reviewing the actual consent request, verifying the necessity of requested permissions, monitoring granted permissions, and applying user assignment restrictions where appropriate.",
+        "citations": [
+          "MS-REVIEW-1",
+          "MS-REVIEW-2"
+        ]
+      },
+      {
+        "text": "Revocation of Microsoft Entra permissions can restrict ChatGPT capabilities; existing conditional access policies and MFA apply at connection sign-in but location/network restrictions may not be enforced for server-side requests.",
+        "citations": [
+          "CLAUDE-M365-2"
+        ]
+      }
+    ],
+    "recommendations": [
+      "Review the specific delegated permissions requested by ChatGPT and confirm they align with the business need before granting consent.",
+      "Implement a centralized administrator approval workflow for all third-party app permission requests to Microsoft 365.",
+      "Ensure service desk staff are trained to verify publisher identity and permission scopes before enabling access.",
+      "Monitor granted permissions regularly and revoke unnecessary permissions promptly.",
+      "Verify that the Business plan supports required monitoring and permission management features for ChatGPT integration."
+    ],
+    "unknowns": [
+      "Whether the requested delegated permissions Files.Read.All and Sites.Read.All have been reviewed and authorized by an administrator.",
+      "Whether the consent has been granted by an authorized administrator with appropriate scope.",
+      "Exact documented console locations and prerequisites for service desk controls specific to ChatGPT permission management in Microsoft 365 Business plan.",
+      "Whether the Business plan includes advanced monitoring or conditional access features relevant to this integration."
+    ],
+    "risks": [
+      "Granting Files.Read.All and Sites.Read.All delegated permissions can expose confidential and personal data accessible by the user to ChatGPT, increasing data leakage risk.",
+      "If consent is granted without verifying publisher identity and permission necessity, malicious or excessive access could be granted.",
+      "Lack of centralized review and monitoring may allow unauthorized or excessive permissions to persist unnoticed.",
+      "Conditional access policies may not fully restrict server-side access by ChatGPT, potentially weakening security controls."
+    ],
+    "controls": [
+      {
+        "action": "Implement a centralized administrator approval workflow for reviewing and approving third-party app permission requests.",
+        "location": "Microsoft Entra admin center > Enterprise applications > Consent and permissions management (verification required)",
+        "prerequisites": "Global Administrator or Privileged Role Administrator role; appropriate licensing for consent management features (verification required)",
+        "owner": "IT Security Administrator",
+        "verification": "Audit logs of consent requests and approvals; periodic review of granted permissions",
+        "rollback": "Revoke consent for ChatGPT application in Microsoft Entra if unauthorized permissions are detected",
+        "citations": [
+          "MS-REVIEW-1",
+          "MS-REVIEW-2"
+        ]
+      },
+      {
+        "action": "Train service desk staff to verify publisher identity, understand delegated permissions requested, and confirm business justification before enabling ChatGPT access.",
+        "location": "Internal IT policy and training documentation (verification required)",
+        "prerequisites": "Access to Microsoft documentation on permissions; training resources",
+        "owner": "Service Desk Manager",
+        "verification": "Periodic knowledge assessments and audit of permission enablement requests",
+        "rollback": "Suspend permission enablement pending retraining if errors are found",
+        "citations": [
+          "MS-REVIEW-1"
+        ]
+      },
+      {
+        "action": "Monitor and audit granted delegated permissions regularly to detect and revoke unnecessary or excessive access.",
+        "location": "Microsoft Entra admin center > Enterprise applications > Permissions (verification required)",
+        "prerequisites": "Global Administrator or Security Administrator role; monitoring tools enabled (verification required)",
+        "owner": "IT Security Administrator",
+        "verification": "Regular reports on granted permissions and usage logs",
+        "rollback": "Revoke permissions or consent as needed based on audit findings",
+        "citations": [
+          "MS-REVIEW-1",
+          "CLAUDE-M365-2"
+        ]
+      }
+    ],
+    "plan_guidance": [
+      {
+        "text": "The Business plan supports delegated permissions for ChatGPT connectors but may lack advanced monitoring or conditional access features; verify plan capabilities before deployment.",
+        "citations": [
+          "CLAUDE-M365-1"
+        ]
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "text": "Microsoft Entra consent and ChatGPT action enablement are separate steps, potentially performed by different administrators. Consent does not automatically connect individual accounts or enable actions. Existing Microsoft access restrictions still apply. Sites.Selected is not supported for live SharePoint search; supported ChatGPT site-collection restrictions are a separate mechanism.",
+      "id": "OAI-LIVE",
+      "title": "SharePoint app: live access and prerequisites",
+      "url": "https://help.openai.com/en/articles/12143177-sharepoint-app-and-setup-in-chatgpt",
+      "section": "Overview; Connect SharePoint; Review permissions for live SharePoint access",
+      "scope": "live",
+      "reviewed": "2026-11-09",
+      "kind": "Paraphrased official documentation note",
+      "vendor": "ChatGPT",
+      "platform": "Microsoft 365",
+      "chunk_id": "OAI-LIVE-2"
+    },
+    {
+      "text": "Microsoft permission grants, enabled ChatGPT actions and an individual's account connection are distinct prerequisites. A change to the Microsoft grant can require reviewing or refreshing the connection.",
+      "id": "OAI-ADMIN",
+      "title": "Workspace app controls and plan distinctions",
+      "url": "https://help.openai.com/en/articles/11509118-admin-controls-security-and-compliance-for-plugins-and-apps",
+      "section": "Default behavior by plan; Role-based access control; Manage plugin and app access",
+      "scope": "all",
+      "reviewed": "2026-11-09",
+      "kind": "Paraphrased official documentation note",
+      "vendor": "ChatGPT",
+      "platform": "Microsoft 365",
+      "chunk_id": "OAI-ADMIN-2"
+    },
+    {
+      "text": "Entra permission revocation can restrict capabilities: Mail.Read for email, Chat.Read for Teams reading, and ChatMessage.Send, ChannelMessage.Send and Chat.Create for messaging. Users may disable tools in a chat. Review the actual consent request before configuring access.\n\nConditional Access behavior differs for server-side requests. MFA applies at connection sign-in; device checks use the connection device record, not necessarily the current device. The guide says location/network restrictions are not supported as ordinary user-location controls. Do not weaken existing policies as a workaround; escalate compatibility for review.",
+      "id": "CLAUDE-M365",
+      "title": "Claude Microsoft 365 connector security",
+      "url": "https://support.claude.com/en/articles/12684923-microsoft-365-connector-security-guide",
+      "section": "Work or school accounts; Restrict access",
+      "scope": "live",
+      "vendor": "Claude",
+      "platform": "Microsoft 365",
+      "reviewed": "2026-11-11",
+      "kind": "Paraphrased official documentation note",
+      "chunk_id": "CLAUDE-M365-2"
+    },
+    {
+      "text": "Microsoft recommends restricting user consent to selected permissions and verified publishers, with other requests reviewed centrally. An administrator approval workflow can support this process. Review existing apps and granted permissions; additional monitoring capabilities depend on licensing.\n\nBefore tenant-wide consent, verify the publisher and application identity, understand every requested permission, and match the request to the expected business functionality. Familiarity or widespread use is not sufficient justification. Do not grant permissions that are unexplained or appear excessive; obtain clarification from the publisher.",
+      "id": "MS-REVIEW",
+      "title": "Evaluating application consent requests",
+      "url": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/manage-consent-requests",
+      "section": "Auditing and monitoring; Evaluate a request for tenant-wide admin consent",
+      "scope": "all",
+      "reviewed": "2026-11-09",
+      "kind": "Paraphrased official documentation note",
+      "vendor": "shared",
+      "platform": "Microsoft 365",
+      "chunk_id": "MS-REVIEW-1"
+    },
+    {
+      "text": "Where appropriate, consider user assignment restrictions for approved applications. Review delegated versus application permissions explicitly rather than assuming all consent requests have the same impact.",
+      "id": "MS-REVIEW",
+      "title": "Evaluating application consent requests",
+      "url": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/manage-consent-requests",
+      "section": "Auditing and monitoring; Evaluate a request for tenant-wide admin consent",
+      "scope": "all",
+      "reviewed": "2026-11-09",
+      "kind": "Paraphrased official documentation note",
+      "vendor": "shared",
+      "platform": "Microsoft 365",
+      "chunk_id": "MS-REVIEW-2"
+    },
+    {
+      "text": "Claude uses delegated permissions for Outlook, SharePoint, OneDrive and Teams. The connector is available across Claude plans. For work or school accounts, the guide requires one-time Microsoft Entra Global Administrator consent; this does not mean assigning the connector that administrator role.\n\nTeam and Enterprise add organization-level connector gating. An Owner enables Microsoft 365 through Organization settings > Connectors > Browse connectors. Individual authentication and Microsoft consent remain separate.",
+      "id": "CLAUDE-M365",
+      "title": "Claude Microsoft 365 connector security",
+      "url": "https://support.claude.com/en/articles/12684923-microsoft-365-connector-security-guide",
+      "section": "Work or school accounts; Restrict access",
+      "scope": "live",
+      "vendor": "Claude",
+      "platform": "Microsoft 365",
+      "reviewed": "2026-11-11",
+      "kind": "Paraphrased official documentation note",
+      "chunk_id": "CLAUDE-M365-1"
+    }
+  ],
+  "trace": [
+    "validate: answer",
+    "retrieve: 6 chunks (baseline)",
+    "generate: structured assessment",
+    "verify: supported by model check"
+  ],
+  "latency_seconds": 10.59,
+  "grounding_reason": "All factual claims in the assessment are directly supported by the cited evidence chunks. The assessment correctly distinguishes between administrator consent and administrator role assignment, aligns with Microsoft recommendations on permission review and consent workflows, and appropriately identifies risks and controls without asserting unsupported capabilities or pricing details. No live/sync or subscription requirements are mixed improperly, and recommendations are clearly conditional and based on the evidence. Missing information is properly identified as unknowns without speculation.",
+  "configuration": "baseline",
+  "scenario": {
+    "vendor": "ChatGPT",
+    "platform": "Microsoft 365",
+    "requested_permissions": " Delegated Files.Read.All and Sites.Read.All",
+    "plan": "Business",
+    "method": "Live SharePoint access",
+    "sensitivity": "Confidential / personal",
+    "permissions_reviewed": "Unknown",
+    "consent_authorized": "Unknown"
+  },
+  "question": "What risks should we review before granting this access, and what controls should our service desk implement? Explain whether administrator consent gives ChatGPT an administrator role. Cite your sources and identify any missing information."
+}

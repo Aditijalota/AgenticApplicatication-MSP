@@ -54,10 +54,10 @@ python -m pytest -q
 python evaluate.py --mode both
 ```
 
-`evals/cases.json` is the current 21-case definition. Earlier delivered Excel workbooks cover the original 18-case ChatGPT scope and are not the current multivendor evaluation. The runner produces actual responses, source recall, route matching and latency. Manually review factual support, control usefulness, plan accuracy, missing permissions and ticket actionability. No live-model results are claimed until real calls run.
+`evals/cases.json` contains 24 planned cases (48 baseline/filtered runs); the full suite remains unexecuted. Four live user-supplied exports and an honest review are available in [docs/LIVE_EVALUATION.md](docs/LIVE_EVALUATION.md). The latest Business-plan run improved vendor isolation but still failed full citation review. Software tests: 24 passed with fixtures, not a factual-quality score. The Excel workbook records the initial live pair; the evaluation report includes the two later runs.
 
 The corpus contains paraphrased notes, not complete downloaded vendor manuals. Claude/Gemini coverage is thinner than ChatGPT coverage. Exact OAuth scopes and permission type must be checked against the real consent screen. Unknown settings, license requirements, residual risks and authorization remain blockers. This prototype is advisory and is not production-ready security certification.
 
 ## Submission assets
 
-`docs/SUBMISSION.md` provides the project narrative; `docs/DEMO_SCRIPT.md` provides a five-minute demo outline. Add measured results and the real deployment URL before final submission.
+[Project documentation](https://docs.google.com/document/d/1yIGyHTf5U1lnOU06COyAFnVW4ILkwy8cSF3QdeUlU04) and [repository narrative](docs/SUBMISSION.md) cover scope, data, prompts, iterations and actual results. [Recording script](docs/DEMO_SCRIPT.md) targets 4 minutes 40 seconds. The user still needs to record/upload the video and verify reviewer access. Use the actual Streamlit browser URL if submitting an optional application link.
