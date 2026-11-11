@@ -16,6 +16,12 @@ No tenant connection, document inspection, automatic provisioning or ticket subm
 
 ## Stack and architecture
 
+![AI Integration Security Advisor architecture: curated evidence and self-reported scenarios flow through retrieval, generation and verification to reviewed ticket drafts.](docs/images/architecture.png)
+
+[View the full-size architecture diagram](docs/images/architecture.png).
+
+The diagram shows the implemented prototype. It does not connect to customer tenants or provision access. Ticket drafts remain **AUTHORIZATION PENDING**, and automated grounding checks still require review.
+
 Python 3.12; Streamlit UI; LangChain documents, chunking and retrieval; OpenAI embeddings and configurable answer model; LangGraph validation → retrieval → generation → evidence verification; local persisted InMemoryVectorStore; pytest; GitHub source; Streamlit Community Cloud deployment target.
 
 LlamaCloud/LlamaParse and Pinecone are possible later additions, **not connected in this version**. The small curated corpus currently uses attributed JSON research notes rather than PDF parsing. This avoids requiring additional keys for the deadline prototype.
